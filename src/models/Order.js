@@ -19,26 +19,6 @@ class Order extends Sequelize.Model {
         key: 'user_id'
       }
     },
-    full_name: {
-      type: DataTypes.STRING(225),
-      allowNull: true
-    },
-    address: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    phone_number: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    email: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    quantity: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
     total_amount: {
       type: DataTypes.INTEGER,
       allowNull: true

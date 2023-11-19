@@ -181,39 +181,72 @@ const verifyOTPAndResetPassword = async (req, res) => {
   }
 };
 
-
-
-
 const loginUserEmailPasword = async (req, res) => {
-    try {
-      const { email, password } = req.body;
-  
-      // Tìm người dùng dựa trên email
-      const user = await models.Users.findOne({ where: { email } });
-  
-      if (!user) {
-        return failCode(res, "Email không tồn tại trong hệ thống.");
-      }
-  
-      // So sánh mật khẩu được nhập với mật khẩu đã lưu trong cơ sở dữ liệu
-      const passwordMatch = await bcrypt.compare(password, user.password);
-  
-      if (!passwordMatch) {
-        return failCode(res, "Mật khẩu không chính xác.");
-      }
-  
-      // Thực hiện việc đăng nhập thành công
-      return succesCode(res, { message: "Đăng nhập thành công.", user });
-    } catch (error) {
-      console.error("Error:", error);
-      return errorCode(res, "Lỗi Backend");
+  try {
+    const { email, password } = req.body;
+
+    // Tìm người dùng dựa trên email
+    const user = await models.Users.findOne({ where: { email } });
+
+    if (!user) {
+      return failCode(res, "Email không tồn tại trong hệ thống.");
     }
-  };
+
+    // So sánh mật khẩu được nhập với mật khẩu đã lưu trong cơ sở dữ liệu
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      return failCode(res, "Mật khẩu không chính xác.");
+    }
+
+    if (user.status === "0") {
+      return errorCode(res, "Tài khoản của bạn đã bị xóa.");
+    }
+
+    // Thực hiện việc đăng nhập thành công
+    return succesCode(res, { message: "Đăng nhập thành công.", user });
+  } catch (error) {
+    console.error("Error:", error);
+    return errorCode(res, "Lỗi Backend");
+  }
+};
+
+const getListUser = async (req, res) => {
+  try {
+    let user = await models.Users.findAll();
+    succesCode(res, user, "Lấy danh sách người dùng thành công");
+  } catch (error) {
+    return errorCode(res, "Lỗi Backend");
+  }
+};
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await models.Users.findOne({ where: { user_id: id } });
+
+    if (!user) {
+      return errorCode(res, "Người dùng không tồn tại");
+    }
+
+    await models.Users.update(
+      {
+        status: 0, // Assuming status 0 represents an inactive/deleted user
+      },
+      { where: { user_id: id } }
+    );
+
+    succesCode(res, null, "Đã vô hiệu hóa người dùng thành công");
+  } catch (error) {
+    return errorCode(res, "Lỗi Backend");
+  }
+};
 module.exports = {
   checkEmailLogin,
   createUser,
   verifyOTP,
   forgotPassword,
   verifyOTPAndResetPassword,
-  loginUserEmailPasword
+  loginUserEmailPasword,
+  getListUser,
+  deleteUser
 };

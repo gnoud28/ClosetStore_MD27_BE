@@ -7,8 +7,7 @@ class OrderDetails extends Sequelize.Model {
   static init(sequelize, DataTypes) {
   return super.init({
     order_detail_id: {
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(50),
       allowNull: false,
       primaryKey: true
     },
@@ -29,10 +28,6 @@ class OrderDetails extends Sequelize.Model {
       }
     },
     quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    price_per_unit: {
       type: DataTypes.INTEGER,
       allowNull: true
     }

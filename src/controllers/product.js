@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require("uuid");
 const getListAllProducts = async (req, res) => {
   try {
     const products = await models.Product.findAll({
-      include: ["category"],
+      include: ["category","Product_Sizes"],
     });
 
     succesCode(res, products, `Lấy danh sách products thành công!!!`);
@@ -117,7 +117,9 @@ const createProduct = async (req, res) => {
       description,
       image_url,
       creation_date,
+      sizes, // Thêm thông tin về kích thước từ request body
     } = req.body;
+
     let product = await models.Product.create({
       product_id: uuidv4(),
       product_name,
@@ -127,8 +129,20 @@ const createProduct = async (req, res) => {
       image_url,
       creation_date,
     });
+console.log(sizes)
+    // Kiểm tra nếu có thông tin về kích thước (sizes) trong request body
+    if (sizes && sizes.length > 0) {
+      // Tạo các bản ghi về kích thước trong Product_Sizes
+      const productSizes = sizes.map((size) => ({
+        product_id: product.product_id,
+        size_name: size.size_name,
+      }));
 
-    succesCode(res, product, "Tạo mới sản phẩm thành công");
+      // Thêm thông tin về kích thước vào bảng Product_Sizes
+      await models.Product_Sizes.bulkCreate(productSizes);
+    }
+
+    succesCode(res, product, "Tạo mới sản phẩm và kích thước thành công");
   } catch (error) {
     errorCode(res, "Lỗi Backend");
   }

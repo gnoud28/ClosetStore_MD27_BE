@@ -31,9 +31,8 @@ const getListProductByCategory = async (req, res) => {
 
 const getListCategory = async (req, res) => {
   try {
-      // Find the category by name
-    const category = await models.ProductCategory.findAll({     
-    });
+    // Find the category by name
+    const category = await models.ProductCategory.findAll({});
 
     if (!category) {
       return failCode(res, "Không tìm thấy danh mục với tên đã cung cấp.");
@@ -45,4 +44,32 @@ const getListCategory = async (req, res) => {
     errorCode(res, "Lỗi Backend");
   }
 };
-module.exports = { getListProductByCategory ,getListCategory};
+
+const createCategory = async (req, res) => {
+  try {
+    let { category_name, image_url, description } = req.body;
+    let category = await models.ProductCategory.create({
+      category_id:uuidv4(),
+      category_name,
+      image_url,
+      description,
+    });
+    succesCode(res,category, "Tạo mới loại sản phẩm thành công")
+  } catch (error) {
+    errorCode(res, "Lỗi Backend");
+  }
+};
+const updateCategory = async (req, res) => {
+  try {
+    let {category_id ,category_name, image_url, description } = req.body;
+    let category = await models.ProductCategory.update({
+      category_name,
+      image_url,
+      description,
+    },{where:{category_id}});
+    succesCode(res,category, "Cập nhật loại sản phẩm thành công")
+  } catch (error) {
+    errorCode(res, "Lỗi Backend");
+  }
+};
+module.exports = { getListProductByCategory, getListCategory,createCategory ,updateCategory};
