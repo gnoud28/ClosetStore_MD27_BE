@@ -44,7 +44,7 @@ const checkEmailLogin = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { full_name, password, phone_number, email } = req.body;
+    const { full_name, password, phone_number, email, address } = req.body;
 
     // Kiểm tra xem email hoặc số điện thoại đã tồn tại trong cơ sở dữ liệu chưa
     const existingEmailUser = await models.Users.findOne({ where: { email } });
@@ -53,9 +53,9 @@ const createUser = async (req, res) => {
     });
 
     if (existingEmailUser) {
-      return failCode(res, "Email đã tồn tại trong hệ thống.");
+       failCode(res, "Email đã tồn tại trong hệ thống.");
     } else if (existingPhoneUser) {
-      return failCode(res, "Số điện thoại đã tồn tại trong hệ thống.");
+       failCode(res, "Số điện thoại đã tồn tại trong hệ thống.");
     } else {
       // Sử dụng bcrypt để băm mật khẩu
       const hashedPassword = await bcrypt.hash(password, 10); // 10 là số vòng lặp để tạo salt
@@ -70,6 +70,7 @@ const createUser = async (req, res) => {
         email,
         status: 2, // Nếu status là 2, có thể là chưa xác minh OTP
         otp: OTP,
+        address,
       });
       // Gửi OTP qua SMS sử dụng Twilio
       const accountSid = process.env.ACCOUNT_SID;

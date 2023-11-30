@@ -1,4 +1,5 @@
 const DataTypes = require("sequelize").DataTypes;
+const _Notification = require("./Notification");
 const _Order = require("./Order");
 const _OrderDetails = require("./OrderDetails");
 const _Product = require("./Product");
@@ -8,6 +9,7 @@ const _ShoppingCart = require("./ShoppingCart");
 const _Users = require("./Users");
 
 function initModels(sequelize) {
+  const Notification = _Notification(sequelize, DataTypes);
   const Order = _Order(sequelize, DataTypes);
   const OrderDetails = _OrderDetails(sequelize, DataTypes);
   const Product = _Product(sequelize, DataTypes);
@@ -26,12 +28,15 @@ function initModels(sequelize) {
   Product.hasMany(ShoppingCart, { as: "ShoppingCarts", foreignKey: "product_id"});
   Product.belongsTo(ProductCategory, { as: "category", foreignKey: "category_id"});
   ProductCategory.hasMany(Product, { as: "Products", foreignKey: "category_id"});
+  Notification.belongsTo(Users, { as: "user", foreignKey: "user_id"});
+  Users.hasMany(Notification, { as: "Notifications", foreignKey: "user_id"});
   Order.belongsTo(Users, { as: "user", foreignKey: "user_id"});
   Users.hasMany(Order, { as: "Orders", foreignKey: "user_id"});
   ShoppingCart.belongsTo(Users, { as: "user", foreignKey: "user_id"});
   Users.hasMany(ShoppingCart, { as: "ShoppingCarts", foreignKey: "user_id"});
 
   return {
+    Notification,
     Order,
     OrderDetails,
     Product,

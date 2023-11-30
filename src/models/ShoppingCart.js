@@ -38,6 +38,10 @@ class ShoppingCart extends Sequelize.Model {
     size: {
       type: DataTypes.STRING(10),
       allowNull: true
+    },
+    color: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     }
   }, {
     sequelize,

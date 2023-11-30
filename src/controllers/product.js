@@ -118,6 +118,7 @@ const createProduct = async (req, res) => {
       image_url,
       creation_date,
       sizes, // Thêm thông tin về kích thước từ request body
+      quantity,
     } = req.body;
 
     let product = await models.Product.create({
@@ -128,6 +129,7 @@ const createProduct = async (req, res) => {
       description,
       image_url,
       creation_date,
+      quantity,
     });
 console.log(sizes)
     // Kiểm tra nếu có thông tin về kích thước (sizes) trong request body
@@ -157,6 +159,7 @@ const updateProduct = async (req, res) => {
       description,
       image_url,
       creation_date,
+      quantity
     } = req.body;
     let product = await models.Product.update(
       {
@@ -166,6 +169,7 @@ const updateProduct = async (req, res) => {
         description,
         image_url,
         creation_date,
+        quantity
       },
       { where: { product_id } }
     );

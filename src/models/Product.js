@@ -38,6 +38,10 @@ class Product extends Sequelize.Model {
     creation_date: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     }
   }, {
     sequelize,

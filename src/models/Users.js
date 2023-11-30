@@ -38,6 +38,10 @@ class Users extends Sequelize.Model {
     otp: {
       type: DataTypes.STRING(10),
       allowNull: true
+    },
+    address: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,
