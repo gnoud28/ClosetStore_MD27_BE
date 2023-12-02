@@ -107,6 +107,7 @@ const verifyOTP = async (req, res) => {
     });
 
     if (user) {
+      user.update({status: 1})
       // Nếu tìm thấy người dùng với số điện thoại và mã OTP đúng
       // Có thể cập nhật trạng thái của người dùng hoặc xác minh thành công ở đây
       // Ví dụ: user.update({ status: 1 }); // Cập nhật trạng thái thành đã xác minh

@@ -139,12 +139,7 @@ const deleteItemCart = async (req, res) => {
 
 const createPayment = async(req, res) => {
   
-  const cart = await models.ShoppingCart.findAll({where:{user_id:req.body.userid}, include: [
-    {
-      model: models.Product,
-      as: "product",
-    },
-  ],})
+  const cart = req.body.cart;
   let total = 0;
 
   // Tính toán tổng giá trị của giỏ hàng
