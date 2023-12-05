@@ -79,7 +79,7 @@ const createUser = async (req, res) => {
 
       const message = await client.messages.create({
         body: `Mã OTP của bạn là: ${OTP}`,
-        from: "+19382532160", // Thay YOUR_TWILIO_PHONE_NUMBER bằng số điện thoại Twilio của bạn
+        from: "+13182668517", // Thay YOUR_TWILIO_PHONE_NUMBER bằng số điện thoại Twilio của bạn
         to: phone_number, // Gửi OTP đến số điện thoại của người dùng mới đăng ký
       });
 
@@ -146,7 +146,7 @@ const forgotPassword = async (req, res) => {
 
     const message = await client.messages.create({
       body: `Mã OTP của bạn là: ${OTP}`,
-      from: "+19382532160", // Thay YOUR_TWILIO_PHONE_NUMBER bằng số điện thoại Twilio của bạn
+      from: "+13182668517", // Thay YOUR_TWILIO_PHONE_NUMBER bằng số điện thoại Twilio của bạn
       to: phone_number, // Gửi OTP đến số điện thoại của người dùng mới đăng ký
     });
 
@@ -242,6 +242,28 @@ const deleteUser = async (req, res) => {
     return errorCode(res, "Lỗi Backend");
   }
 };
+
+const updateProfile = async (req, res) => {
+  try {
+    const { user_id, full_name, image_url, email, address } = req.body;
+
+    const profile = await models.Users.update(
+      {
+        full_name,
+        image_url,
+        email,
+        address,
+      },
+      { where: { user_id } }
+    );
+    const user = await models.Users.findOne({ where: { user_id } });
+    succesCode(res, user, "Cập nhật thông tin thành công");
+  } catch (error) {
+    return errorCode(res, "Lỗi Backend");
+  }
+};
+
+
 module.exports = {
   checkEmailLogin,
   createUser,
@@ -250,5 +272,6 @@ module.exports = {
   verifyOTPAndResetPassword,
   loginUserEmailPasword,
   getListUser,
-  deleteUser
+  deleteUser,
+  updateProfile,
 };
