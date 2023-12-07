@@ -29,6 +29,31 @@ const getListProductByCategory = async (req, res) => {
   }
 };
 
+const getListProductByCategoryID = async (req, res) => {
+  try {
+    const { category_id } = req.params;
+
+    // Find the category by name
+    const category = await models.Product.findAll({
+      where: { category_id },
+      // include: {
+      //   model: models.Product,
+      //   as: "Products", // Assuming you have defined the association as 'products'
+      // },
+    });
+
+    if (!category) {
+      return failCode(res, "Không tìm thấy danh mục với tên đã cung cấp.");
+    }
+
+    succesCode(res, category, "Lấy sản phẩm theo danh mục thành công!!!");
+  } catch (error) {
+    console.error("Sequelize error:", error);
+    errorCode(res, "Lỗi Backend");
+  }
+};
+
+
 const getListCategory = async (req, res) => {
   try {
     // Find the category by name
@@ -72,4 +97,4 @@ const updateCategory = async (req, res) => {
     errorCode(res, "Lỗi Backend");
   }
 };
-module.exports = { getListProductByCategory, getListCategory,createCategory ,updateCategory};
+module.exports = { getListProductByCategory, getListCategory,createCategory ,updateCategory , getListProductByCategoryID};

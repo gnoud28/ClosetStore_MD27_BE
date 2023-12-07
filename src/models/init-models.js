@@ -1,4 +1,5 @@
 const DataTypes = require("sequelize").DataTypes;
+const _Banner = require("./Banner");
 const _Notification = require("./Notification");
 const _Order = require("./Order");
 const _OrderDetails = require("./OrderDetails");
@@ -9,6 +10,7 @@ const _ShoppingCart = require("./ShoppingCart");
 const _Users = require("./Users");
 
 function initModels(sequelize) {
+  const Banner = _Banner(sequelize, DataTypes);
   const Notification = _Notification(sequelize, DataTypes);
   const Order = _Order(sequelize, DataTypes);
   const OrderDetails = _OrderDetails(sequelize, DataTypes);
@@ -36,6 +38,7 @@ function initModels(sequelize) {
   Users.hasMany(ShoppingCart, { as: "ShoppingCarts", foreignKey: "user_id"});
 
   return {
+    Banner,
     Notification,
     Order,
     OrderDetails,
