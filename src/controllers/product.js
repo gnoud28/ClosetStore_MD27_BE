@@ -182,14 +182,22 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   try {
     let { id } = req.params;
-    let product = await models.Product.destroy({ where: { product_id:id } });
 
-    succesCode(res, product, "Xóa sản phẩm thành công");
+    // Delete from the 'size' table
+    await models.Product_Sizes.destroy({ where: { product_id: id } });
+
+    // Delete from the 'product' table
+    let deletedProduct = await models.Product.destroy({ where: { product_id: id } });
+
+    if (deletedProduct) {
+      succesCode(res, deletedProduct, "Xóa sản phẩm thành công");
+    } else {
+      errorCode(res, "Không tìm thấy sản phẩm để xóa");
+    }
   } catch (error) {
     errorCode(res, "Lỗi Backend");
   }
 };
-
 module.exports = {
   getListAllProducts,
   getListBannerProducts,

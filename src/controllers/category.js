@@ -97,4 +97,32 @@ const updateCategory = async (req, res) => {
     errorCode(res, "Lỗi Backend");
   }
 };
-module.exports = { getListProductByCategory, getListCategory,createCategory ,updateCategory , getListProductByCategoryID};
+const deleteCategory = async (req, res) => {
+  try {
+    const { category_id } = req.params;
+
+    // Kiểm tra xem có sản phẩm thuộc loại sản phẩm này không
+    const productsCount = await models.Product.count({
+      where: { category_id },
+    });
+
+    if (productsCount > 0) {
+      return failCode(res, "Không thể xóa loại sản phẩm này vì có sản phẩm thuộc loại này.");
+    }
+
+    const deletedCategory = await models.ProductCategory.destroy({
+      where: { category_id },
+    });
+
+    if (!deletedCategory) {
+      return failCode(res, "Không tìm thấy danh mục để xóa.");
+    }
+
+    succesCode(res, null, "Xóa danh mục sản phẩm thành công");
+  } catch (error) {
+    console.error("Sequelize error:", error);
+    errorCode(res, "Lỗi Backend");
+  }
+};
+
+module.exports = { getListProductByCategory, getListCategory,createCategory ,updateCategory , getListProductByCategoryID, deleteCategory};
