@@ -97,32 +97,62 @@ const updateCategory = async (req, res) => {
     errorCode(res, "Lỗi Backend");
   }
 };
-const deleteCategory = async (req, res) => {
-  try {
-    const { category_id } = req.params;
+const deleteCategoryById = async (req, res) => {
+//   try {
+//     const { category_id } = req.params;
 
-    // Kiểm tra xem có sản phẩm thuộc loại sản phẩm này không
-    const productsCount = await models.Product.count({
-      where: { category_id },
-    });
+//     // Kiểm tra xem có sản phẩm nào liên quan đến loại sản phẩm này không
+//     const productsCount = await models.Product.count({
+//       where: { category_id },
+//     });
 
-    if (productsCount > 0) {
-      return failCode(res, "Không thể xóa loại sản phẩm này vì có sản phẩm thuộc loại này.");
-    }
+//     if (productsCount > 0) {
+//       return failCode(res, "Không thể xóa loại sản phẩm này vì có sản phẩm thuộc loại này.");
+//     }
 
-    const deletedCategory = await models.ProductCategory.destroy({
-      where: { category_id },
-    });
+//     const deletedCategory = await models.ProductCategory.destroy({
+//       where: { category_id },
+//     });
 
-    if (!deletedCategory) {
-      return failCode(res, "Không tìm thấy danh mục để xóa.");
-    }
+//     if (!deletedCategory) {
+//       return failCode(res, "Không tìm thấy danh mục để xóa.");
+//     }
 
-    succesCode(res, null, "Xóa danh mục sản phẩm thành công");
-  } catch (error) {
-    console.error("Sequelize error:", error);
-    errorCode(res, "Lỗi Backend");
+//     succesCode(res, null, "Xóa danh mục sản phẩm thành công");
+//   } catch (error) {
+//     console.error("Lỗi Sequelize:", error);
+//     errorCode(res, "Lỗi Backend");
+//   }
+// };
+
+try {
+  const { category_id } = req.params;
+
+  // Đếm số lượng sản phẩm thuộc loại sản phẩm này
+  const productsCount = await models.Product.count({
+    where: { category_id },
+  });
+
+  if (productsCount > 0) {
+    return failCode(res, "Không thể xóa loại sản phẩm này vì có sản phẩm thuộc loại này.");
   }
+
+  // Nếu không có sản phẩm nào, xóa loại sản phẩm
+  const deletedCategory = await models.ProductCategory.destroy({
+    where: { category_id },
+  });
+
+  if (!deletedCategory) {
+    return failCode(res, "Không tìm thấy danh mục để xóa.");
+  }
+
+  succesCode(res, null, "Xóa danh mục sản phẩm thành công");
+} catch (error) {
+  console.error("Lỗi Sequelize:", error); 
+  errorCode(res, "Lỗi Backend");
+}
 };
 
-module.exports = { getListProductByCategory, getListCategory,createCategory ,updateCategory , getListProductByCategoryID, deleteCategory};
+
+
+module.exports = { getListProductByCategory, getListCategory,createCategory ,updateCategory , getListProductByCategoryID, deleteCategoryById};
