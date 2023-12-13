@@ -51,7 +51,7 @@ const getListCart = async (req, res) => {
 
 const addToShoppingCart = async (req, res) => {
   try {
-    const { productId, quantity, userId, size, color } = req.body;
+    const { productId, quantity, userId, size } = req.body;
 
     // Find the user based on user_id
     const user = await models.Users.findOne({ where: { user_id: userId } });
@@ -68,11 +68,6 @@ const addToShoppingCart = async (req, res) => {
 
     if (!product) {
       return failCode(res, "Không tìm thấy sản phẩm với ID đã cung cấp.");
-    }
-
-    // Check if the requested quantity is greater than the available quantity
-    if (parseInt(quantity) > product.quantity) {
-      return failCode(res, "Không đủ sản phẩm trong kho.");
     }
 
     // Check if the user already has the product in the shopping cart
@@ -93,7 +88,6 @@ const addToShoppingCart = async (req, res) => {
         quantity: parseInt(quantity),
         status: "order",
         size,
-        color,
       });
     }
     const order = shoppingCartItem;
@@ -103,7 +97,6 @@ const addToShoppingCart = async (req, res) => {
     errorCode(res, "Lỗi Backend");
   }
 };
-
 
 const updateQuantityCart = async (req, res) => {
   try {
@@ -139,7 +132,12 @@ const deleteItemCart = async (req, res) => {
 
 const createPayment = async(req, res) => {
   
-  const cart = req.body.cart;
+  const cart = await models.ShoppingCart.findAll({where:{user_id:req.body.userid}, include: [
+    {
+      model: models.Product,
+      as: "product",
+    },
+  ],})
   let total = 0;
 
   // Tính toán tổng giá trị của giỏ hàng
@@ -225,14 +223,6 @@ await models.ShoppingCart.destroy({
   const signedQueryString = `${queryString}&vnp_SecureHashType=SHA512&vnp_SecureHash=${signed}`;
 
   const paymentUrl = `${vnpUrl}?${signedQueryString}`;
-
-  const newNotification = await models.Notification.create({
-    notification_id: uuidv4(),
-    user_id: req.body.userid,
-    message: "Payment successful",
-    create_time: new Date(), // Assuming the current timestamp for creation
-  });
-
 
   res.send(paymentUrl); // Trả về URL thanh toán trong phản hồi
 };
