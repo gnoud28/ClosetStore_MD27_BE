@@ -57,13 +57,18 @@ const getListProductByCategoryID = async (req, res) => {
 const getListCategory = async (req, res) => {
   try {
     // Find the category by name
-    const category = await models.ProductCategory.findAll({});
+    const category = await models.ProductCategory.findAll({
+      include: {
+        model: models.Product,
+        as: "Products", // Assuming you have defined the association as 'products'
+      },
+    });
 
     if (!category) {
       return failCode(res, "Không tìm thấy danh mục với tên đã cung cấp.");
     }
 
-    succesCode(res, category, "Lấy danh mục thành công!!!");
+    succesCode(res, category, "Lấy sản phẩm theo danh mục thành công!!!");
   } catch (error) {
     console.error("Sequelize error:", error);
     errorCode(res, "Lỗi Backend");

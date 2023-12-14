@@ -17,10 +17,11 @@ const getAllBanners = async (req, res) => {
 
 const createBanner = async (req, res) => {
   try {
-    const {  image_url } = req.body;
+    const { title, ImagesUrl } = req.body;
     const banner = await models.Banner.create({
       banner_id: uuidv4(),
-      image_url,
+      title,
+      ImagesUrl,
     });
     succesCode(res, banner, "Tạo mới banner thành công");
   } catch (error) {
@@ -28,13 +29,12 @@ const createBanner = async (req, res) => {
     errorCode(res, "Lỗi Backend");
   }
 };
-
 const updateBanner = async (req, res) => {
   try {
-    const { banner_id, image_url} = req.body;
+    const { banner_id,title, ImagesUrl} = req.body;
     const updatedBanner = await models.Banner.update(
       {
-        image_url,
+        ImagesUrl,title,
       },
       { where: { banner_id } }
     );
@@ -45,8 +45,6 @@ const updateBanner = async (req, res) => {
     errorCode(res, "Lỗi Backend");
   }
 };
-
-
 
 const deleteBanner = async (req, res) => {
     try {
