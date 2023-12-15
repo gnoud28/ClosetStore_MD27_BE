@@ -42,6 +42,10 @@ class ShoppingCart extends Sequelize.Model {
     color: {
       type: DataTypes.STRING(255),
       allowNull: true
+    },
+    price_pay: {
+      type: DataTypes.FLOAT,
+      allowNull: true
     }
   }, {
     sequelize,

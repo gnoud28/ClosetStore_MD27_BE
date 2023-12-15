@@ -168,7 +168,7 @@ const orderDetailsPromises = cart.map(async (cartItem) => {
 await models.ShoppingCart.destroy({
   truncate: true, // Nếu set thành true, sẽ thực hiện TRUNCATE TABLE thay vì DELETE
 })
-  const ipAddr =
+  const  ipAddr =
     req.headers["x-forwarded-for"] ||
     req.connection.remoteAddress ||
     req.socket.remoteAddress ||

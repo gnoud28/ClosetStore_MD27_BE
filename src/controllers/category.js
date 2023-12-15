@@ -160,4 +160,31 @@ try {
 
 
 
-module.exports = { getListProductByCategory, getListCategory,createCategory ,updateCategory , getListProductByCategoryID, deleteCategoryById};
+
+const delteteCate = async (req,res) =>{
+  // try {
+    const  {category_id} = req.params;
+    const productsInCategory = await models.Product.findAll({
+      where: {
+        category_id,
+      },
+    });
+
+    if (productsInCategory.length > 0) {
+      failCode(res,"Còn sản phẩm! Không thể xóa")
+    } else {
+      succesCode(res,0,"Có thể xóa")
+      const category = await models.Product.destroy({
+        where: {
+          category_id,
+        },
+      });
+      succesCode(res,category,"Xóa loại sản phẩm thành công!!!")
+    }
+  // } catch (error) {
+  //   console.error('Error:', error);
+  //   throw error;
+  // }
+}
+
+module.exports = { getListProductByCategory, getListCategory,createCategory ,updateCategory , getListProductByCategoryID, deleteCategoryById , delteteCate};

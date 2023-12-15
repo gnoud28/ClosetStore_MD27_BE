@@ -12,8 +12,8 @@ class Banner extends Sequelize.Model {
       primaryKey: true
     },
     title: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      type: DataTypes.STRING(50),
+      allowNull: false
     },
     ImagesUrl: {
       type: DataTypes.STRING(255),
