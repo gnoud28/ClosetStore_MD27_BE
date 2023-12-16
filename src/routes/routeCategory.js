@@ -1,5 +1,5 @@
 const express = require('express');
-const { getListProductByCategory, getListCategory, createCategory, updateCategory, getListProductByCategoryID,deleteCategoryById, delteteCate } = require('../controllers/category');
+const { getListProductByCategory, getListCategory, createCategory, updateCategory, getListProductByCategoryID, deleteCategoryById, delteteCate } = require('../controllers/category');
 
 const routeCategory = express.Router();
 
@@ -12,7 +12,7 @@ routeCategory.post('/updatecategory', updateCategory);
 routeCategory.delete('/deleteCategory/:category_id', deleteCategoryById);
 
 
-routeCategory.get('/deleteCate/:category_id', delteteCate);
+routeCategory.delete('/deleteCate/:category_id', delteteCate);
 
 
 

@@ -56,17 +56,8 @@ const getListProductByCategoryID = async (req, res) => {
 
 const getListCategory = async (req, res) => {
   try {
-    // Find the category by name
-    const category = await models.ProductCategory.findAll({
-      include: {
-        model: models.Product,
-        as: "Products", // Assuming you have defined the association as 'products'
-      },
-    });
+    const category = await models.ProductCategory.findAll();
 
-    if (!category) {
-      return failCode(res, "Không tìm thấy danh mục với tên đã cung cấp.");
-    }
 
     succesCode(res, category, "Lấy sản phẩm theo danh mục thành công!!!");
   } catch (error) {
@@ -79,91 +70,89 @@ const createCategory = async (req, res) => {
   try {
     let { category_name, image_url, description } = req.body;
     let category = await models.ProductCategory.create({
-      category_id:uuidv4(),
+      category_id: uuidv4(),
       category_name,
       image_url,
       description,
     });
-    succesCode(res,category, "Tạo mới loại sản phẩm thành công")
+    succesCode(res, category, "Tạo mới loại sản phẩm thành công")
   } catch (error) {
     errorCode(res, "Lỗi Backend");
   }
 };
 const updateCategory = async (req, res) => {
   try {
-    let {category_id ,category_name, image_url, description } = req.body;
+    let { category_id, category_name, image_url, description } = req.body;
     let category = await models.ProductCategory.update({
       category_name,
       image_url,
       description,
-    },{where:{category_id}});
-    succesCode(res,category, "Cập nhật loại sản phẩm thành công")
+    }, { where: { category_id } });
+    succesCode(res, category, "Cập nhật loại sản phẩm thành công")
   } catch (error) {
     errorCode(res, "Lỗi Backend");
   }
 };
 const deleteCategoryById = async (req, res) => {
-//   try {
-//     const { category_id } = req.params;
+  //   try {
+  //     const { category_id } = req.params;
 
-//     // Kiểm tra xem có sản phẩm nào liên quan đến loại sản phẩm này không
-//     const productsCount = await models.Product.count({
-//       where: { category_id },
-//     });
+  //     // Kiểm tra xem có sản phẩm nào liên quan đến loại sản phẩm này không
+  //     const productsCount = await models.Product.count({
+  //       where: { category_id },
+  //     });
 
-//     if (productsCount > 0) {
-//       return failCode(res, "Không thể xóa loại sản phẩm này vì có sản phẩm thuộc loại này.");
-//     }
+  //     if (productsCount > 0) {
+  //       return failCode(res, "Không thể xóa loại sản phẩm này vì có sản phẩm thuộc loại này.");
+  //     }
 
-//     const deletedCategory = await models.ProductCategory.destroy({
-//       where: { category_id },
-//     });
+  //     const deletedCategory = await models.ProductCategory.destroy({
+  //       where: { category_id },
+  //     });
 
-//     if (!deletedCategory) {
-//       return failCode(res, "Không tìm thấy danh mục để xóa.");
-//     }
+  //     if (!deletedCategory) {
+  //       return failCode(res, "Không tìm thấy danh mục để xóa.");
+  //     }
 
-//     succesCode(res, null, "Xóa danh mục sản phẩm thành công");
-//   } catch (error) {
-//     console.error("Lỗi Sequelize:", error);
-//     errorCode(res, "Lỗi Backend");
-//   }
-// };
+  //     succesCode(res, null, "Xóa danh mục sản phẩm thành công");
+  //   } catch (error) {
+  //     console.error("Lỗi Sequelize:", error);
+  //     errorCode(res, "Lỗi Backend");
+  //   }
+  // };
 
-try {
-  const { category_id } = req.params;
+  try {
+    const { category_id } = req.params;
 
-  // Đếm số lượng sản phẩm thuộc loại sản phẩm này
-  const productsCount = await models.Product.count({
-    where: { category_id },
-  });
+    // Đếm số lượng sản phẩm thuộc loại sản phẩm này
+    const productsCount = await models.Product.count({
+      where: { category_id },
+    });
 
-  if (productsCount > 0) {
-    return failCode(res, "Không thể xóa loại sản phẩm này vì có sản phẩm thuộc loại này.");
+    if (productsCount > 0) {
+      return failCode(res, "Không thể xóa loại sản phẩm này vì có sản phẩm thuộc loại này.");
+    }
+
+    // Nếu không có sản phẩm nào, xóa loại sản phẩm
+    const deletedCategory = await models.ProductCategory.destroy({
+      where: { category_id },
+    });
+
+
+
+    succesCode(res, 1, "Xóa danh mục sản phẩm thành công");
+  } catch (error) {
+    console.error("Lỗi Sequelize:", error);
+    errorCode(res, "Lỗi Backend");
   }
-
-  // Nếu không có sản phẩm nào, xóa loại sản phẩm
-  const deletedCategory = await models.ProductCategory.destroy({
-    where: { category_id },
-  });
-
-  if (!deletedCategory) {
-    return failCode(res, "Không tìm thấy danh mục để xóa.");
-  }
-
-  succesCode(res, null, "Xóa danh mục sản phẩm thành công");
-} catch (error) {
-  console.error("Lỗi Sequelize:", error); 
-  errorCode(res, "Lỗi Backend");
-}
 };
 
 
 
 
-const delteteCate = async (req,res) =>{
-  // try {
-    const  {category_id} = req.params;
+const delteteCate = async (req, res) => {
+  try {
+    const { category_id } = req.params;
     const productsInCategory = await models.Product.findAll({
       where: {
         category_id,
@@ -171,20 +160,20 @@ const delteteCate = async (req,res) =>{
     });
 
     if (productsInCategory.length > 0) {
-      failCode(res,"Còn sản phẩm! Không thể xóa")
+      failCode(res, "Còn sản phẩm! Không thể xóa");
     } else {
-      succesCode(res,0,"Có thể xóa")
-      const category = await models.Product.destroy({
+
+      const category = await models.ProductCategory.destroy({
         where: {
           category_id,
         },
       });
-      succesCode(res,category,"Xóa loại sản phẩm thành công!!!")
+      succesCode(res, category, "Xóa loại sản phẩm thành công!!!");
     }
-  // } catch (error) {
-  //   console.error('Error:', error);
-  //   throw error;
-  // }
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
 }
 
-module.exports = { getListProductByCategory, getListCategory,createCategory ,updateCategory , getListProductByCategoryID, deleteCategoryById , delteteCate};
+module.exports = { getListProductByCategory, getListCategory, createCategory, updateCategory, getListProductByCategoryID, deleteCategoryById, delteteCate };
