@@ -8,7 +8,7 @@ const { Op } = require("sequelize");
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 
-const getListCart = async (req, res) => {
+const getListCart = async (req, res) => { 
   try {
     let { id } = req.params;
 
@@ -138,14 +138,14 @@ const createPayment = async(req, res) => {
       as: "product",
     },
   ],})
-  let total = 0;
+  let total = req.body.total;
 
   // Tính toán tổng giá trị của giỏ hàng
  await cart.forEach((item) => {
     const productPrice = item.product?.price; // Giá của sản phẩm
     const quantity = item.quantity; // Số lượng sản phẩm trong giỏ hàng
     const productTotal = productPrice * quantity; // Tổng giá trị của sản phẩm (số lượng * giá)
-    total += productTotal; // Cộng dồn tổng giá trị của từng sản phẩm vào tổng giá trị của giỏ hàng
+ // Cộng dồn tổng giá trị của từng sản phẩm vào tổng giá trị của giỏ hàng
   });
  
 const order = await models.Order.create({
@@ -155,6 +155,8 @@ const order = await models.Order.create({
   status:'success',
   order_date:moment()
 })
+
+
 const orderDetailsPromises = cart.map(async (cartItem) => {
   const orderDetail = await models.OrderDetails.create({
     order_detail_id:uuidv4(),
@@ -224,6 +226,29 @@ await models.ShoppingCart.destroy({
 
   const paymentUrl = `${vnpUrl}?${signedQueryString}`;
 
+
+
+
+
+  await Promise.all(cart.map(async (item) => {
+    const productId = item.product.product_id; 
+    const quantityBought = item.quantity; 
+    
+    
+    const product = await models.Product.findByPk(productId);
+    
+  
+    if (product && product.quantity >= quantityBought) {
+      const updatedQuantity = product.quantity - quantityBought;
+  console.log(updatedQuantity)
+  console.log(item.product.product_id)
+      await product.update({ quantity: updatedQuantity },{where:{product_id:item.product.product_id}});
+    } else {
+   
+      console.log(`Không đủ số lượng sản phẩm để giảm cho sản phẩm có ID: ${productId}`);
+  
+    }
+  }));
   res.send(paymentUrl); // Trả về URL thanh toán trong phản hồi
 };
 
