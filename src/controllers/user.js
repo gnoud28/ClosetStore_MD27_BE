@@ -264,6 +264,40 @@ const updateProfile = async (req, res) => {
 };
 
 
+
+
+const resetpassword = async (req, res) => {
+  try {
+    const { phone_number, otp, oldPassword, newPassword } = req.body;
+
+    // Tìm người dùng dựa trên số điện thoại và mã OTP
+    const user = await models.Users.findOne({
+      where: { phone_number, otp: otp },
+    });
+
+    if (!user) {
+      return failCode(res, "Mã OTP không hợp lệ hoặc đã hết hạn.");
+    }
+
+    // Kiểm tra mật khẩu cũ
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isPasswordValid) {
+      return failCode(res, "Mật khẩu cũ không chính xác.");
+    }
+
+    // Xác minh thành công, cập nhật mật khẩu mới
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await user.update({ password: hashedPassword, otp: null }); // Xóa mã OTP sau khi xác minh thành công
+
+    return succesCode(res, { message: "Mật khẩu của bạn đã được cập nhật." });
+  } catch (error) {
+    console.error("Error:", error);
+    return errorCode(res, "Lỗi Backend");
+  }
+};
+
+
 module.exports = {
   checkEmailLogin,
   createUser,
@@ -274,4 +308,5 @@ module.exports = {
   getListUser,
   deleteUser,
   updateProfile,
+  resetpassword
 };

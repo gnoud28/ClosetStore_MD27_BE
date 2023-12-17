@@ -8,7 +8,7 @@ const { Op } = require("sequelize");
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 
-const getListCart = async (req, res) => { 
+const getListCart = async (req, res) => {
   try {
     let { id } = req.params;
 
@@ -130,47 +130,108 @@ const deleteItemCart = async (req, res) => {
   }
 };
 
-const createPayment = async(req, res) => {
-  
-  const cart = await models.ShoppingCart.findAll({where:{user_id:req.body.userid}, include: [
-    {
-      model: models.Product,
-      as: "product",
-    },
-  ],})
+const createPayment = async (req, res) => {
+
+  const cart = await models.ShoppingCart.findAll({
+    where: { user_id: req.body.userid }, include: [
+      {
+        model: models.Product,
+        as: "product",
+      },
+    ],
+  })
   let total = req.body.total;
 
   // Tính toán tổng giá trị của giỏ hàng
- await cart.forEach((item) => {
+  await cart.forEach((item) => {
     const productPrice = item.product?.price; // Giá của sản phẩm
     const quantity = item.quantity; // Số lượng sản phẩm trong giỏ hàng
     const productTotal = productPrice * quantity; // Tổng giá trị của sản phẩm (số lượng * giá)
- // Cộng dồn tổng giá trị của từng sản phẩm vào tổng giá trị của giỏ hàng
+    // Cộng dồn tổng giá trị của từng sản phẩm vào tổng giá trị của giỏ hàng
   });
- 
-const order = await models.Order.create({
-  order_id: uuidv4(),
-  user_id:req.body.userid,
-  total_amount : Math.floor(parseFloat(total)),
-  status:'success',
-  order_date:moment()
-})
+
+  const order = await models.Order.create({
+    order_id: uuidv4(),
+    user_id: req.body.userid,
+    total_amount: Math.floor(parseFloat(total)),
+    status: 'success',
+    order_date: moment()
+  })
 
 
-const orderDetailsPromises = cart.map(async (cartItem) => {
-  const orderDetail = await models.OrderDetails.create({
-    order_detail_id:uuidv4(),
-    order_id: order.order_id,
-    product_id: cartItem.product.product_id, // Sản phẩm từ cartItem
-    quantity: cartItem.quantity,
-    // Các thuộc tính khác của OrderDetails có thể tùy biến dựa trên dữ liệu trong cartItem
+  const orderDetailsPromises = cart.map(async (cartItem) => {
+    const orderDetail = await models.OrderDetails.create({
+      order_detail_id: uuidv4(),
+      order_id: order.order_id,
+      product_id: cartItem.product.product_id, // Sản phẩm từ cartItem
+      quantity: cartItem.quantity,
+      // Các thuộc tính khác của OrderDetails có thể tùy biến dựa trên dữ liệu trong cartItem
+    });
+    return orderDetail;
   });
-  return orderDetail;
-});
-await models.ShoppingCart.destroy({
-  truncate: true, // Nếu set thành true, sẽ thực hiện TRUNCATE TABLE thay vì DELETE
-})
-  const  ipAddr =
+
+  await models.ShoppingCart.destroy({
+    truncate: true, // Nếu set thành true, sẽ thực hiện TRUNCATE TABLE thay vì DELETE
+  })
+
+
+//   let selectedProductsIds = []; // Đây là mảng chứa các ID của các sản phẩm được chọn
+
+// if (selectedProductsIds.length > 0) {
+//   // Nếu có các sản phẩm được chọn
+//   await models.ShoppingCart.destroy({
+//     where: {
+//       product_id: { [Op.in]: selectedProductsIds } // Xóa các sản phẩm có ID trong mảng selectedProductsIds
+//     }
+//   });
+// } else {
+//   // Nếu không có sản phẩm nào được chọn, thực hiện TRUNCATE TABLE (xóa toàn bộ giỏ hàng)
+//   await models.ShoppingCart.destroy({
+//     truncate: true // Nếu set thành true, sẽ thực hiện TRUNCATE TABLE thay vì DELETE
+//   });
+// }
+
+
+
+
+
+  // let selectedProductsIds = [];
+  // function onSelectProduct(productId) {
+  //   // Kiểm tra xem sản phẩm đã được chọn chưa
+  //   const index = selectedProductsIds.indexOf(productId);
+  //   if (index === -1) {
+  //     // Nếu chưa được chọn, thêm vào danh sách
+  //     selectedProductsIds.push(productId);
+  //   } else {
+  //     // Nếu đã được chọn, loại bỏ khỏi danh sách
+  //     selectedProductsIds.splice(index, 1);
+  //   }
+  //   async function handlePayment() {
+  //     // Xử lý thanh toán cho selectedProductsIds
+  //     await processPayment(selectedProductsIds);
+    
+  //     // Sau khi thanh toán thành công, xóa các sản phẩm đã thanh toán khỏi giỏ hàng
+  //     await models.ShoppingCart.destroy({
+  //       where: {
+  //         product_id: { [Op.in]: selectedProductsIds },
+  //       }
+  //     });
+    
+  //     // Tiếp tục với các bước khác sau khi thanh toán (nếu cần)
+  //   }
+  //   // Đây là nơi để bạn có thể cập nhật giao diện người dùng để phản ánh sự thay đổi của selectedProductsIds
+  //   // Ví dụ: cập nhật hiển thị cho danh sách sản phẩm đã chọn trên giao diện người dùng
+  // }
+
+
+
+
+
+
+
+
+
+  const ipAddr =
     req.headers["x-forwarded-for"] ||
     req.connection.remoteAddress ||
     req.socket.remoteAddress ||
@@ -231,22 +292,22 @@ await models.ShoppingCart.destroy({
 
 
   await Promise.all(cart.map(async (item) => {
-    const productId = item.product.product_id; 
-    const quantityBought = item.quantity; 
-    
-    
+    const productId = item.product.product_id;
+    const quantityBought = item.quantity;
+
+
     const product = await models.Product.findByPk(productId);
-    
-  
+
+
     if (product && product.quantity >= quantityBought) {
       const updatedQuantity = product.quantity - quantityBought;
-  console.log(updatedQuantity)
-  console.log(item.product.product_id)
-      await product.update({ quantity: updatedQuantity },{where:{product_id:item.product.product_id}});
+      console.log(updatedQuantity)
+      console.log(item.product.product_id)
+      await product.update({ quantity: updatedQuantity }, { where: { product_id: item.product.product_id } });
     } else {
-   
+
       console.log(`Không đủ số lượng sản phẩm để giảm cho sản phẩm có ID: ${productId}`);
-  
+
     }
   }));
   res.send(paymentUrl); // Trả về URL thanh toán trong phản hồi
@@ -254,22 +315,24 @@ await models.ShoppingCart.destroy({
 
 
 
-const historyOrder = async (req,res) =>{
+const historyOrder = async (req, res) => {
   try {
-    let {id} = req.params;
-    let result = await models.Order.findAll({where:{user_id:id},include: [
-      {
-        model: models.OrderDetails,
-        as: "OrderDetails",
-        include: [
-          {
-            model: models.Product,
-            as: "product",
-          },
-        ]
-      },
-    ],})
-    return succesCode(res,result,"Lấy thành công danh sách lịch sử thanh toán")
+    let { id } = req.params;
+    let result = await models.Order.findAll({
+      where: { user_id: id }, include: [
+        {
+          model: models.OrderDetails,
+          as: "OrderDetails",
+          include: [
+            {
+              model: models.Product,
+              as: "product",
+            },
+          ]
+        },
+      ],
+    })
+    return succesCode(res, result, "Lấy thành công danh sách lịch sử thanh toán")
   } catch (error) {
     errorCode(res, "Lỗi Backend");
   }
