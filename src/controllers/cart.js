@@ -154,7 +154,7 @@ const createPayment = async (req, res) => {
     order_id: uuidv4(),
     user_id: req.body.userid,
     total_amount: Math.floor(parseFloat(total)),
-    status: 'success',
+    status: 'Chờ xác nhận',
     order_date: moment()
   })
 

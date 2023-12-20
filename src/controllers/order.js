@@ -26,6 +26,7 @@ const getListOrder = async (req,res) =>{
             ],
           },
         ],
+        order: [['order_date', 'DESC']], 
       });
       return succesCode(res,result,"Lấy thành công danh sách lịch sử thanh toán")
     } catch (error) {
@@ -33,4 +34,18 @@ const getListOrder = async (req,res) =>{
     }
   }
 
-  module.exports = {getListOrder}
+  const updateOrder = async (req, res) => {
+    try {
+      const { order_id, status } = req.body; // Lấy order_id từ request body
+      const updatedOrder = await models.Order.update({ status }, { where: { order_id } });
+      if (updatedOrder[0] === 0) {
+        return failCode(res, "Không tìm thấy đơn hàng"); // Kiểm tra xem có đơn hàng nào được cập nhật không
+      }
+      succesCode(res, updatedOrder, "Cập nhật thành công");
+    } catch (error) {
+      errorCode(res, "Lỗi Backend");
+    }
+  };
+  
+
+  module.exports = {getListOrder, updateOrder}

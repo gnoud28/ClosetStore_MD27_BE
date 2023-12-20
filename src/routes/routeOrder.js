@@ -1,10 +1,10 @@
 const express = require('express');
-const { getListOrder } = require('../controllers/order');
+const { getListOrder, updateOrder } = require('../controllers/order');
 const routeOrder = express.Router();
 
 
 routeOrder.get('/getlistorder', getListOrder);
-
+routeOrder.post('/updateOrder', updateOrder);
 
 
 

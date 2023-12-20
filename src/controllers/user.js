@@ -53,9 +53,9 @@ const createUser = async (req, res) => {
     });
 
     if (existingEmailUser) {
-       failCode(res, "Email đã tồn tại trong hệ thống.");
+      failCode(res, "Email đã tồn tại trong hệ thống.");
     } else if (existingPhoneUser) {
-       failCode(res, "Số điện thoại đã tồn tại trong hệ thống.");
+      failCode(res, "Số điện thoại đã tồn tại trong hệ thống.");
     } else {
       // Sử dụng bcrypt để băm mật khẩu
       const hashedPassword = await bcrypt.hash(password, 10); // 10 là số vòng lặp để tạo salt
@@ -107,7 +107,7 @@ const verifyOTP = async (req, res) => {
     });
 
     if (user) {
-      user.update({status: 1})
+      user.update({ status: 1 })
       // Nếu tìm thấy người dùng với số điện thoại và mã OTP đúng
       // Có thể cập nhật trạng thái của người dùng hoặc xác minh thành công ở đây
       // Ví dụ: user.update({ status: 1 }); // Cập nhật trạng thái thành đã xác minh
@@ -268,34 +268,35 @@ const updateProfile = async (req, res) => {
 
 const resetpassword = async (req, res) => {
   try {
-    const { phone_number, otp, oldPassword, newPassword } = req.body;
+    const { user_id, oldPassword, newPassword } = req.body;
 
-    // Tìm người dùng dựa trên số điện thoại và mã OTP
-    const user = await models.Users.findOne({
-      where: { phone_number, otp: otp },
-    });
+    // Lấy thông tin người dùng dựa trên ID
+    const user = await models.Users.findOne({ where: { user_id } });
 
     if (!user) {
-      return failCode(res, "Mã OTP không hợp lệ hoặc đã hết hạn.");
+      return failCode(res, "Người dùng không tồn tại.");
     }
 
-    // Kiểm tra mật khẩu cũ
+    // Kiểm tra xem mật khẩu cũ nhập vào có khớp với mật khẩu lưu trữ không
     const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
 
     if (!isPasswordValid) {
       return failCode(res, "Mật khẩu cũ không chính xác.");
+      
     }
-
-    // Xác minh thành công, cập nhật mật khẩu mới
+  
+    // Nếu mật khẩu cũ đúng, cập nhật mật khẩu thành mật khẩu mới
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await user.update({ password: hashedPassword, otp: null }); // Xóa mã OTP sau khi xác minh thành công
+    await user.update({ password: hashedPassword });
 
     return succesCode(res, { message: "Mật khẩu của bạn đã được cập nhật." });
+    
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Lỗi:", error);
     return errorCode(res, "Lỗi Backend");
   }
 };
+
 
 
 module.exports = {
