@@ -21,11 +21,11 @@ const getOrderCountAndTotalWithinMonth = async (req, res) => {
         order_date: {
           [Op.between]: [startDate, endDate],
         },
+        status: 'Giao Hàng Thành Công', // Thêm điều kiện cho trạng thái ở đây
       },
-      raw: true, // Đảm bảo kết quả trả về là dạng object thô từ database, không được parse thành các instance model Sequelize
+      raw: true,
     });
 
-    // Chuyển đổi chuỗi số thành số
     ordersWithinMonth.forEach((order) => {
       order.totalAmount = Number(order.totalAmount);
     });
@@ -42,47 +42,37 @@ const getOrderCountAndTotalWithinMonth = async (req, res) => {
 };
 
 
-// Import các thư viện và model cần thiết
+const getSuccessfulOrdersWithinDateRange = async (req, res) => {
+  let { startDate, endDate } = req.query; // Ngày bắt đầu và ngày kết thúc từ query params
+  try {
+    const successfulOrders = await models.Order.findAll({
+      attributes: [
+        [fn("COUNT", literal("*")), "orderCount"],
+        [fn("COALESCE", fn("SUM", col("total_amount")), 0), "totalAmount"],
+      ],
+      where: {
+        order_date: {
+          [Op.between]: [startDate, endDate],
+        },
+        status: 'Giao Hàng Thành Công', // Lọc theo trạng thái đã giao hàng thành công
+      },
+      raw: true,
+    });
 
-// const getTotalSalesAndRevenue = async (req, res) => {
-//   const { startDate, endDate } = req.body; // Nhận ngày bắt đầu và ngày kết thúc từ người dùng
+    successfulOrders.forEach((order) => {
+      order.totalAmount = Number(order.totalAmount);
+    });
 
-//   try {
-//     const start = new Date(startDate);
-//     const end = new Date(endDate);
-//     end.setDate(end.getDate() + 1); // Để bao gồm cả ngày kết thúc
+    return succesCode(
+      res,
+      successfulOrders,
+      "Lấy tổng order trong khoảng ngày thành công"
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    return errorCode(res, "Lỗi Backend");
+  }
+};
 
-//     const ordersWithinRange = await models.Order.findAll({
-//       attributes: [
-//         [fn("SUM", col("total_amount")), "totalRevenue"],
-//         [fn("SUM", col("OrderProducts.quantity")), "totalQuantitySold"],
-//       ],
-//       include: [
-//         {
-//           model: models.OrderProduct,
-//           attributes: [],
-//         },
-//       ],
-//       where: {
-//         order_date: {
-//           [Op.between]: [start, end],
-//         },
-//       },
-//       raw: true,
-//     });
-//     const totalRevenue = ordersWithinRange.length > 0 ? ordersWithinRange[0].totalRevenue : 0;
-//     const totalQuantitySold = ordersWithinRange.length > 0 ? ordersWithinRange[0].totalQuantitySold : 0;
-
-//     return succesCode(
-//       res,
-//       { totalRevenue, totalQuantitySold },
-//       `Tổng doanh thu và tổng số lượng sản phẩm đã bán từ ${startDate} đến ${endDate}`
-//     );
-//   } catch (error) {
-//     console.error("Error:", error);
-//     return errorCode(res, "Lỗi Backend");
-//   }
-// };
-
-module.exports = { getOrderCountAndTotalWithinMonth};
+module.exports = { getSuccessfulOrdersWithinDateRange,getOrderCountAndTotalWithinMonth };
 
