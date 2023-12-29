@@ -1,5 +1,5 @@
 const express = require('express');
-const { checkEmailLogin, createUser, verifyOTP, forgotPassword, verifyOTPAndResetPassword, loginUserEmailPasword, getListUser, deleteUser, updateProfile, resetpassword } = require('../controllers/user');
+const { checkEmailLogin, createUser, verifyOTP, forgotPassword, verifyOTPAndResetPassword, loginUserEmailPasword, getListUser, deleteUser, updateProfile, changePassword } = require('../controllers/user');
 const routeUser = express.Router();
 
 
@@ -13,7 +13,7 @@ routeUser.get('/getalluser', getListUser);
 routeUser.delete('/deleteuser/:id',deleteUser );
 routeUser.post('/updateprofile',updateProfile );
 
-routeUser.post('/resetpasswordinfo',resetpassword );
+routeUser.post('/changePassword',changePassword );
 
 
 

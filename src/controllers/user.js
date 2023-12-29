@@ -266,33 +266,33 @@ const updateProfile = async (req, res) => {
 
 
 
-const resetpassword = async (req, res) => {
+const changePassword = async (req, res) => {
   try {
-    const { user_id, oldPassword, newPassword } = req.body;
+    const {user_id,oldPassword, newPassword } = req.body;
 
-    // Lấy thông tin người dùng dựa trên ID
-    const user = await models.Users.findOne({ where: { user_id } });
+    // Tìm người dùng dựa trên user_id
+    const user = await models.Users.findOne({
+      where: { user_id: user_id },
+    });
 
     if (!user) {
-      return failCode(res, "Người dùng không tồn tại.");
+      return failCode(res, "Không tìm thấy id người dùng");
     }
 
-    // Kiểm tra xem mật khẩu cũ nhập vào có khớp với mật khẩu lưu trữ không
+    // Kiểm tra mật khẩu cũ
     const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
 
     if (!isPasswordValid) {
       return failCode(res, "Mật khẩu cũ không chính xác.");
-      
     }
-  
-    // Nếu mật khẩu cũ đúng, cập nhật mật khẩu thành mật khẩu mới
+
+    // Xác minh thành công, cập nhật mật khẩu mới
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await user.update({ password: hashedPassword });
+    await user.update({ password: hashedPassword}); 
 
     return succesCode(res, { message: "Mật khẩu của bạn đã được cập nhật." });
-    
   } catch (error) {
-    console.error("Lỗi:", error);
+    console.error("Error:", error);
     return errorCode(res, "Lỗi Backend");
   }
 };
@@ -309,5 +309,5 @@ module.exports = {
   getListUser,
   deleteUser,
   updateProfile,
-  resetpassword
+  changePassword
 };
