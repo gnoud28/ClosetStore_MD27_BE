@@ -46,6 +46,27 @@ const getListOrder = async (req,res) =>{
       errorCode(res, "Lỗi Backend");
     }
   };
+
+  const getOrdersByStatus = async (req, res) => {
+    try {
+      const { status } = req.params; // Lấy trạng thái từ URL parameter
+  
+      // Gọi hàm xử lý lấy danh sách đơn hàng theo trạng thái từ model
+      const orders = await models.Order.findAll({
+        where: { status }, // Lọc theo trạng thái
+        include: [
+          // Các phần include tương tự như trước
+        ],
+        order: [['order_date', 'DESC']],
+      });
+  
+      // Trả về danh sách đơn hàng theo trạng thái
+      return succesCode(res, orders, `Danh sách đơn hàng có trạng thái ${status}`);
+    } catch (error) {
+      errorCode(res, 'Lỗi Backend');
+    }
+  };
+
   
 
-  module.exports = {getListOrder, updateOrder}
+  module.exports = {getListOrder, updateOrder,getOrdersByStatus}
