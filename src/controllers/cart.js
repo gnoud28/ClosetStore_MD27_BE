@@ -71,16 +71,17 @@ const addToShoppingCart = async (req, res) => {
     }
 
     // Check if the user already has the product in the shopping cart
+    // Check if the user already has the product in the shopping cart with the same size
     let shoppingCartItem = await models.ShoppingCart.findOne({
-      where: { user_id: finalUserId, product_id: productId },
+      where: { user_id: finalUserId, product_id: productId, size: size },
     });
 
     if (shoppingCartItem) {
-      // If the product is already in the cart, update the quantity
+      // If the product with the same size is already in the cart, update the quantity
       shoppingCartItem.quantity += parseInt(quantity);
       await shoppingCartItem.save();
     } else {
-      // If the product is not in the cart, create a new cart item
+      // If the product with the same size is not in the cart, create a new cart item
       shoppingCartItem = await models.ShoppingCart.create({
         cart_id: uuidv4(),
         user_id: finalUserId,
@@ -90,6 +91,7 @@ const addToShoppingCart = async (req, res) => {
         size,
       });
     }
+
     const order = shoppingCartItem;
     succesCode(res, order, "Sản phẩm đã được thêm vào giỏ hàng thành công!!!");
   } catch (error) {
@@ -175,21 +177,21 @@ const createPayment = async (req, res) => {
   })
 
 
-//   let selectedProductsIds = []; // Đây là mảng chứa các ID của các sản phẩm được chọn
+  //   let selectedProductsIds = []; // Đây là mảng chứa các ID của các sản phẩm được chọn
 
-// if (selectedProductsIds.length > 0) {
-//   // Nếu có các sản phẩm được chọn
-//   await models.ShoppingCart.destroy({
-//     where: {
-//       product_id: { [Op.in]: selectedProductsIds } // Xóa các sản phẩm có ID trong mảng selectedProductsIds
-//     }
-//   });
-// } else {
-//   // Nếu không có sản phẩm nào được chọn, thực hiện TRUNCATE TABLE (xóa toàn bộ giỏ hàng)
-//   await models.ShoppingCart.destroy({
-//     truncate: true // Nếu set thành true, sẽ thực hiện TRUNCATE TABLE thay vì DELETE
-//   });
-// }
+  // if (selectedProductsIds.length > 0) {
+  //   // Nếu có các sản phẩm được chọn
+  //   await models.ShoppingCart.destroy({
+  //     where: {
+  //       product_id: { [Op.in]: selectedProductsIds } // Xóa các sản phẩm có ID trong mảng selectedProductsIds
+  //     }
+  //   });
+  // } else {
+  //   // Nếu không có sản phẩm nào được chọn, thực hiện TRUNCATE TABLE (xóa toàn bộ giỏ hàng)
+  //   await models.ShoppingCart.destroy({
+  //     truncate: true // Nếu set thành true, sẽ thực hiện TRUNCATE TABLE thay vì DELETE
+  //   });
+  // }
 
 
 
@@ -209,14 +211,14 @@ const createPayment = async (req, res) => {
   //   async function handlePayment() {
   //     // Xử lý thanh toán cho selectedProductsIds
   //     await processPayment(selectedProductsIds);
-    
+
   //     // Sau khi thanh toán thành công, xóa các sản phẩm đã thanh toán khỏi giỏ hàng
   //     await models.ShoppingCart.destroy({
   //       where: {
   //         product_id: { [Op.in]: selectedProductsIds },
   //       }
   //     });
-    
+
   //     // Tiếp tục với các bước khác sau khi thanh toán (nếu cần)
   //   }
   //   // Đây là nơi để bạn có thể cập nhật giao diện người dùng để phản ánh sự thay đổi của selectedProductsIds
