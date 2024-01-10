@@ -19,7 +19,7 @@ const getListCommentByProductId = async (req, res) => {
                 product_id: productId, // Điều kiện lấy comment theo product_id
             },
             // Các thuộc tính bạn muốn lấy từ bảng Comments, có thể chỉ định bằng thuộc tính attributes
-            attributes: ['comment_id', 'user_id', 'comment_text', 'comment_date'],
+            attributes: ['comment_id', 'user_id', 'product_id','full_name','product_name', 'comment_text', 'comment_date'],
         });
 
         // Trả về danh sách comment nếu có
@@ -37,7 +37,7 @@ const getAllComments = async (req, res) => {
         // Sử dụng Sequelize model để truy vấn tất cả các comment
         const comments = await models.Comments.findAll({
             // Các thuộc tính bạn muốn lấy từ bảng Comments, có thể chỉ định bằng thuộc tính attributes
-            attributes: ['comment_id', 'user_id', 'product_id', 'comment_text', 'comment_date'],
+            attributes: ['comment_id', 'user_id', 'product_id','full_name','product_name', 'comment_text', 'comment_date'],
         });
 
         // Trả về danh sách comment nếu có
@@ -74,6 +74,26 @@ const createComment = async (req, res) => {
     }
 };
 
+const deleteComment = async (req, res) => {
+    try {
+        const { commentId } = req.params; // Lấy comment_id từ request params
 
-// Export hàm API để sử dụng ở nơi khác trong ứng dụng của bạn
-module.exports = { getListCommentByProductId, getAllComments, createComment };
+        // Tìm comment cần xóa
+        const commentToDelete = await models.Comments.findByPk(commentId);
+
+        if (!commentToDelete) {
+            // Nếu không tìm thấy comment, trả về lỗi
+            return res.status(404).json({ status: failCode, message: "Comment not found" });
+        }
+
+        // Xóa comment từ cơ sở dữ liệu
+        await commentToDelete.destroy();
+
+        res.status(200).json({ status: succesCode, message: "Comment deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting comment:", error);
+        res.status(500).json({ status: errorCode, message: "Error deleting comment" });
+    }
+};
+
+module.exports = { getListCommentByProductId, getAllComments, createComment, deleteComment };
