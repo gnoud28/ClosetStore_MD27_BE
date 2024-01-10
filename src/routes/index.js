@@ -6,6 +6,7 @@ const routeUser = require('./routeUSer.js');
 const routeChart = require('./routeChart.js');
 const routeOrder = require('./routeOrder.js');
 const routeBanner = require('./routeBanner.js');
+const routeComment = require('./routeComment.js');
 const routes = express.Router();
 
 
@@ -16,6 +17,7 @@ routes.use('/user', routeUser)
 routes.use('/chart', routeChart)
 routes.use('/order', routeOrder)
 routes.use('/banner', routeBanner)
+routes.use('/comment', routeComment)
 
 
 

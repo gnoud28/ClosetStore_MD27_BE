@@ -1,39 +1,43 @@
 const Sequelize = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  return Order.init(sequelize, DataTypes);
+  return Comments.init(sequelize, DataTypes);
 }
 
-class Order extends Sequelize.Model {
+class Comments extends Sequelize.Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    order_id: {
+    comment_id: {
       type: DataTypes.STRING(50),
       allowNull: false,
       primaryKey: true
     },
     user_id: {
       type: DataTypes.STRING(50),
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'Users',
         key: 'user_id'
       }
     },
-    total_amount: {
-      type: DataTypes.INTEGER,
+    product_id: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      references: {
+        model: 'Product',
+        key: 'product_id'
+      }
+    },
+    comment_text: {
+      type: DataTypes.TEXT,
       allowNull: true
     },
-    status: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    order_date: {
-      type: DataTypes.DATEONLY,
+    comment_date: {
+      type: DataTypes.DATE,
       allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'Order',
+    tableName: 'Comments',
     timestamps: false,
     indexes: [
       {
@@ -41,7 +45,7 @@ class Order extends Sequelize.Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "order_id" },
+          { name: "comment_id" },
         ]
       },
       {
@@ -49,6 +53,13 @@ class Order extends Sequelize.Model {
         using: "BTREE",
         fields: [
           { name: "user_id" },
+        ]
+      },
+      {
+        name: "product_id",
+        using: "BTREE",
+        fields: [
+          { name: "product_id" },
         ]
       },
     ]
