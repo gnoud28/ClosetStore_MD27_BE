@@ -239,7 +239,7 @@ const createPayment = async (req, res) => {
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress;
 
-  const tmnCode = "WMB3QA0F"; // Thay bằng VNP_TMN_CODE của bạn OETTSQZ7
+  const tmnCode = "WMB3QA0F"; // Thay bằng VNP_TMN_CODE của bạn OETTSQZ7 WMB3QA0F
   const secretKey = "VZCHXVJOYXQYSIRVLOBNTJMFUTWWETDB"; // Thay bằng VNP_SECRET_KEY của bạn IQUINFOSNJEMWQRIHWGZUJBJSVQNDNBZ
   const vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"; // URL của VNPay https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
   const returnUrl = "https://sandbox.vnpayment.vn/apis/docs/bang-ma-loi/"; // URL trả về sau khi thanh toán

@@ -19,7 +19,7 @@ const getListCommentByProductId = async (req, res) => {
                 product_id: productId, // Điều kiện lấy comment theo product_id
             },
             // Các thuộc tính bạn muốn lấy từ bảng Comments, có thể chỉ định bằng thuộc tính attributes
-            attributes: ['comment_id', 'user_id', 'product_id','full_name','product_name', 'comment_text', 'comment_date'],
+            attributes: ['comment_id', 'user_id', 'product_id', 'comment_text', 'comment_date'],
         });
 
         // Trả về danh sách comment nếu có
@@ -37,7 +37,7 @@ const getAllComments = async (req, res) => {
         // Sử dụng Sequelize model để truy vấn tất cả các comment
         const comments = await models.Comments.findAll({
             // Các thuộc tính bạn muốn lấy từ bảng Comments, có thể chỉ định bằng thuộc tính attributes
-            attributes: ['comment_id', 'user_id', 'product_id','full_name','product_name', 'comment_text', 'comment_date'],
+            attributes: ['comment_id', 'user_id','full_name','product_name','product_id', 'comment_text', 'comment_date'],
         });
 
         // Trả về danh sách comment nếu có

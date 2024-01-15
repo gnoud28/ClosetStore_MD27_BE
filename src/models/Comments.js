@@ -34,6 +34,14 @@ class Comments extends Sequelize.Model {
     comment_date: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    full_name: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    product_name: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     }
   }, {
     sequelize,

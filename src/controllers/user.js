@@ -79,7 +79,7 @@ const createUser = async (req, res) => {
 
       const message = await client.messages.create({
         body: `Mã OTP của bạn là: ${OTP}`,
-        from: "+13182668517", // Thay YOUR_TWILIO_PHONE_NUMBER bằng số điện thoại Twilio của bạn
+        from: "+15863817709", // Thay YOUR_TWILIO_PHONE_NUMBER bằng số điện thoại Twilio của bạn
         to: phone_number, // Gửi OTP đến số điện thoại của người dùng mới đăng ký
       });
 
@@ -146,7 +146,7 @@ const forgotPassword = async (req, res) => {
 
     const message = await client.messages.create({
       body: `Mã OTP của bạn là: ${OTP}`,
-      from: "+13182668517", // Thay YOUR_TWILIO_PHONE_NUMBER bằng số điện thoại Twilio của bạn
+      from: "+15863817709", // Thay YOUR_TWILIO_PHONE_NUMBER bằng số điện thoại Twilio của bạn
       to: phone_number, // Gửi OTP đến số điện thoại của người dùng mới đăng ký
     });
 
