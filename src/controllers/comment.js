@@ -19,7 +19,7 @@ const getListCommentByProductId = async (req, res) => {
                 product_id: productId, // Điều kiện lấy comment theo product_id
             },
             // Các thuộc tính bạn muốn lấy từ bảng Comments, có thể chỉ định bằng thuộc tính attributes
-            attributes: ['comment_id', 'user_id', 'product_id', 'comment_text', 'comment_date'],
+            attributes: ['comment_id', 'user_id','full_name','product_name','product_id', 'comment_text', 'comment_date'],
         });
 
         // Trả về danh sách comment nếu có
@@ -30,7 +30,6 @@ const getListCommentByProductId = async (req, res) => {
         res.status(500).json({ status: errorCode, message: "Error fetching comments" });
     }
 };
-
 
 const getAllComments = async (req, res) => {
     try {
@@ -56,6 +55,10 @@ const createComment = async (req, res) => {
     try {
         const { productId, userId, commentText } = req.body; // Lấy thông tin từ body request
 
+        // Truy vấn để lấy thông tin full_name và product_name
+        const user = await models.Users.findOne({ where: { user_id: userId } });
+        const product = await models.Product.findOne({ where: { product_id: productId } });
+
         const newCommentId = uuidv4(); // Tạo một comment_id mới
         const newComment = await models.Comments.create({
           comment_id: newCommentId, // Sử dụng comment_id mới
@@ -63,16 +66,29 @@ const createComment = async (req, res) => {
           user_id: userId,
           comment_text: commentText,
           comment_date: new Date(),
+          full_name: user.full_name, // Thêm thông tin full_name vào comment
+          product_name: product.product_name, // Thêm thông tin product_name vào comment
         });
 
         // Trả về thông tin của comment mới được tạo
-        res.status(201).json({ status: succesCode, data: newComment });
+        res.status(200).json({ status: succesCode, data: newComment });
     } catch (error) {
         // Xử lý lỗi nếu có
         console.error("Error creating comment:", error);
         res.status(500).json({ status: errorCode, message: "Error creating comment" });
     }
 };
+
+
+
+
+
+
+
+
+
+
+
 
 const deleteComment = async (req, res) => {
     try {
