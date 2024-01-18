@@ -27,6 +27,14 @@ class Comments extends Sequelize.Model {
         key: 'product_id'
       }
     },
+    full_name: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    product_name: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     comment_text: {
       type: DataTypes.TEXT,
       allowNull: true
@@ -35,12 +43,8 @@ class Comments extends Sequelize.Model {
       type: DataTypes.DATE,
       allowNull: true
     },
-    full_name: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    product_name: {
-      type: DataTypes.STRING(255),
+    status: {
+      type: DataTypes.FLOAT,
       allowNull: true
     }
   }, {
